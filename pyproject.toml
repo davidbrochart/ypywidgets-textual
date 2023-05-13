@@ -19,8 +19,8 @@ keywords = [
     "textual",
 ]
 dependencies = [
-    "ypywidgets >=0.2.0",
-    "textual >=0.11",
+    "ypywidgets >=0.4.0",
+    "textual >=0.24.1",
 ]
 
 [project.urls]
@@ -35,5 +35,5 @@ include = [
 ]
 
 [project.entry-points.ypywidgets]
-switch = "ypywidgets_textual.switch:Switch"
-txl_switch = "ypywidgets_textual.txl.switch:Switch"
+Switch = "ypywidgets_textual.switch:Switch"
+txl_Switch = "ypywidgets_textual.txl.switch:Switch"

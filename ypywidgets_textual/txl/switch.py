@@ -8,11 +8,13 @@ class Switch(TextualSwitch):
     def __init__(self, model: SwitchModel) -> None:
         super().__init__()
         self.ymodel = model
-        self.ymodel.yvalue.observe(self._on_ychange)
+        model.on_value_change(self.update_value)
 
     def watch_value(self, value: bool) -> None:
         super().watch_value(value)
-        self.ymodel.value = value
+        if value != self.ymodel.value:
+            self.ymodel.value = value
 
-    def _on_ychange(self, event) -> None:
-        self.value = self.ymodel.value
+    def update_value(self, value: bool) -> None:
+        if value != self.value:
+            self.value = value
