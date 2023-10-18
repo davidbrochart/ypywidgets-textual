@@ -20,7 +20,8 @@ keywords = [
 ]
 dependencies = [
     "ypywidgets >=0.4.0",
-    "textual >=0.24.1",
+    "textual >=0.40.0",
+    "textual-plotext",
 ]
 
 [project.urls]
@@ -37,3 +38,5 @@ include = [
 [project.entry-points.ypywidgets]
 Switch = "ypywidgets_textual.switch:Switch"
 txl_Switch = "ypywidgets_textual.txl.switch:Switch"
+Plotext = "ypywidgets_textual.plotext:Plotext"
+txl_Plotext = "ypywidgets_textual.txl.plotext:Plotext"
