@@ -8,12 +8,12 @@ class Plotext(PlotextPlot):
     def __init__(self, model: PlotextModel) -> None:
         super().__init__()
         self.ymodel = model
-        model.on_change("_clear_data", self.clear_data)
-        model.on_change("_scatter", self.scatter)
-        model.on_change("_plot", self.plot)
-        model.on_change("_title", self.title)
+        model.watch__clear_data = self.clear_data
+        model.watch__scatter = self.scatter
+        model.watch__plot = self.plot
+        model.watch__title = self.title
 
-    def clear_data(self, value: bool) -> None:
+    def clear_data(self) -> None:
         self.plt.clear_data()
         self.refresh()
 
@@ -21,12 +21,12 @@ class Plotext(PlotextPlot):
         self.plt.title(value)
         self.refresh()
 
-    def scatter(self, value: bool) -> None:
+    def scatter(self) -> None:
         self.plt.clear_data()
         self.plt.scatter(*self.ymodel._args)
         self.refresh()
 
-    def plot(self, value: bool) -> None:
+    def plot(self) -> None:
         self.plt.clear_data()
         self.plt.plot(*self.ymodel._args)
         self.refresh()
