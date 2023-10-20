@@ -1,6 +1,4 @@
-from ypywidgets import reactive
-
-from .widget import Widget
+from ypywidgets import Widget, reactive
 
 
 class Plotext(Widget):
