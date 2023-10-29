@@ -36,7 +36,11 @@ include = [
 ]
 
 [project.entry-points.ypywidgets]
+Button = "ypywidgets_textual.button:Button"
+txl_Button = "ypywidgets_textual.txl.button:Button"
+
 Switch = "ypywidgets_textual.switch:Switch"
 txl_Switch = "ypywidgets_textual.txl.switch:Switch"
+
 Plotext = "ypywidgets_textual.plotext:Plotext"
 txl_Plotext = "ypywidgets_textual.txl.plotext:Plotext"
