@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from ypywidgets import Widget, reactive
+from ypywidgets.comm import CommWidget
 
 
-class Plotext(Widget):
+class PlotextModel(Widget):
 
     _clear_data = reactive(False)
     _args = reactive([])
@@ -9,8 +12,8 @@ class Plotext(Widget):
     _plot = reactive(False)
     _title = reactive("")
 
-    def __init__(self, primary: bool = True) -> None:
-        super().__init__(primary=primary)
+    def __init__(self, ydoc=None) -> None:
+        super().__init__(ydoc)
 
     def clear_data(self) -> None:
         self._clear_data = not self._clear_data
@@ -25,3 +28,10 @@ class Plotext(Widget):
 
     def title(self, value: str) -> None:
         self._title = value
+
+
+class Plotext(CommWidget, PlotextModel):
+
+    def __init__(self) -> None:
+        CommWidget.__init__(self)
+        PlotextModel.__init__(self)

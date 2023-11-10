@@ -19,8 +19,8 @@ keywords = [
     "textual",
 ]
 dependencies = [
-    "ypywidgets >=0.4.0",
-    "textual >=0.40.0",
+    "ypywidgets >=0.6.0",
+    "textual >=0.41.0",
     "textual-plotext",
 ]
 
@@ -36,11 +36,14 @@ include = [
 ]
 
 [project.entry-points.ypywidgets]
+ButtonModel = "ypywidgets_textual.button:ButtonModel"
 Button = "ypywidgets_textual.button:Button"
 txl_Button = "ypywidgets_textual.txl.button:Button"
 
+SwitchModel = "ypywidgets_textual.switch:SwitchModel"
 Switch = "ypywidgets_textual.switch:Switch"
 txl_Switch = "ypywidgets_textual.txl.switch:Switch"
 
+PlotextModel = "ypywidgets_textual.plotext:PlotextModel"
 Plotext = "ypywidgets_textual.plotext:Plotext"
 txl_Plotext = "ypywidgets_textual.txl.plotext:Plotext"

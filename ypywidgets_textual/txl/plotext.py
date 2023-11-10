@@ -1,6 +1,6 @@
 from textual_plotext import PlotextPlot
 
-from ..plotext import Plotext as PlotextModel
+from ..plotext import PlotextModel
 
 
 class Plotext(PlotextPlot):

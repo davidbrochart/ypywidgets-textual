@@ -1,6 +1,6 @@
 from textual.widgets import Button as TextualButton
 
-from ..button import Button as ButtonModel
+from ..button import ButtonModel
 
 
 class Button(TextualButton):
