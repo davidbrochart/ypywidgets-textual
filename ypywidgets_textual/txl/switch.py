@@ -1,6 +1,6 @@
 from textual.widgets import Switch as TextualSwitch
 
-from ..switch import Switch as SwitchModel
+from ..switch import SwitchModel
 
 
 class Switch(TextualSwitch):

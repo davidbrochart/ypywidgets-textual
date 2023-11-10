@@ -3,9 +3,10 @@ from __future__ import annotations
 from typing import Callable
 
 from ypywidgets import Widget, reactive
+from ypywidgets.comm import CommWidget
 
 
-class Button(Widget):
+class ButtonModel(Widget):
 
     label = reactive("")
     variant = reactive("default")
@@ -19,9 +20,9 @@ class Button(Widget):
         variant: str = "default",
         disabled: bool = False,
         on_button_pressed: Callable[[], None] | None = None,
-        primary: bool = True,
+        ydoc=None,
     ) -> None:
-        super().__init__(primary=primary)
+        super().__init__(ydoc)
         self.label = label
         self.variant = variant
         self.disabled = disabled
@@ -45,3 +46,16 @@ class Button(Widget):
 
     def watch__pressed(self):
         self._on_button_pressed()
+
+
+class Button(CommWidget, ButtonModel):
+
+    def __init__(
+        self,
+        label: str = "",
+        variant: str = "default",
+        disabled: bool = False,
+        on_button_pressed: Callable[[], None] | None = None,
+    ):
+        CommWidget.__init__(self)
+        ButtonModel.__init__(self, label, variant, disabled, on_button_pressed)
