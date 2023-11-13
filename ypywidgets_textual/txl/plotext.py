@@ -12,21 +12,28 @@ class Plotext(PlotextPlot):
         model.watch__scatter = self.scatter
         model.watch__plot = self.plot
         model.watch__title = self.title
+        self.clear_data()
+        self.scatter()
+        self.plot()
+        self.title(model._title)
 
     def clear_data(self) -> None:
-        self.plt.clear_data()
-        self.refresh()
+        if self.ymodel._clear_data:
+            self.plt.clear_data()
+            self.refresh()
 
     def title(self, value: str) -> None:
         self.plt.title(value)
         self.refresh()
 
     def scatter(self) -> None:
-        self.plt.clear_data()
-        self.plt.scatter(*self.ymodel._args)
-        self.refresh()
+        if self.ymodel._scatter:
+            self.plt.clear_data()
+            self.plt.scatter(*self.ymodel._args)
+            self.refresh()
 
     def plot(self) -> None:
-        self.plt.clear_data()
-        self.plt.plot(*self.ymodel._args)
-        self.refresh()
+        if self.ymodel._plot:
+            self.plt.clear_data()
+            self.plt.plot(*self.ymodel._args)
+            self.refresh()
