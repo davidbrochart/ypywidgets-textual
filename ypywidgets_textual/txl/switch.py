@@ -9,6 +9,7 @@ class Switch(TextualSwitch):
         super().__init__()
         self.ymodel = model
         model.watch_value = self._update_value
+        self._update_value(model.value)
 
     def watch_value(self, value: bool) -> None:
         super().watch_value(value)

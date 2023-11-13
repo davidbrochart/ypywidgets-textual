@@ -16,15 +16,18 @@ class PlotextModel(Widget):
         super().__init__(ydoc)
 
     def clear_data(self) -> None:
-        self._clear_data = not self._clear_data
+        self._clear_data = False
+        self._clear_data = True
 
     def scatter(self, *args) -> None:
         self._args = list(args)
-        self._scatter = not self._scatter
+        self._scatter = False
+        self._scatter = True
 
     def plot(self, *args) -> None:
         self._args = list(args)
-        self._plot = not self._plot
+        self._plot = False
+        self._plot = True
 
     def title(self, value: str) -> None:
         self._title = value

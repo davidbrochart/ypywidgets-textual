@@ -16,16 +16,19 @@ class ButtonModel(Widget):
 
     def __init__(
         self,
-        label: str = "",
-        variant: str = "default",
-        disabled: bool = False,
+        label: str | None = None,
+        variant: str | None = None,
+        disabled: bool | None = None,
         on_button_pressed: Callable[[], None] | None = None,
         ydoc=None,
     ) -> None:
         super().__init__(ydoc)
-        self.label = label
-        self.variant = variant
-        self.disabled = disabled
+        if label is not None:
+            self.label = label
+        if variant is not None:
+            self.variant = variant
+        if disabled is not None:
+            self.disabled = disabled
         if on_button_pressed is None:
             def no_op():
                 pass

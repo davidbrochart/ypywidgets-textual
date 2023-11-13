@@ -12,6 +12,9 @@ class Button(TextualButton):
         model.watch_label = self._set_label
         model.watch_variant = self._set_variant
         model.watch_disabled = self._set_disabled
+        self._set_label(model.label)
+        self._set_variant(model.variant)
+        self._set_disabled(model.disabled)
 
     def on_button_pressed(self, event) -> None:
         self.ymodel._pressed = not self.ymodel._pressed
