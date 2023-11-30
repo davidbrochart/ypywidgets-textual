@@ -8,9 +8,10 @@ class SwitchModel(Widget):
     value = reactive(False)
 
     def __init__(
-            self, value: bool | None = None,
-            ydoc=None,
-        ) -> None:
+        self,
+        value: bool | None = None,
+        ydoc=None,
+    ) -> None:
         super().__init__(ydoc)
         if value is not None:
             self.value = value
