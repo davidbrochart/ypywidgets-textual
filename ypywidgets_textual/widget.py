@@ -37,8 +37,8 @@ class Widget(CommWidget, WidgetModel):
 
     def watch__ready(self, value: bool):
         if value:
-            SIZE[0] = self._cols
-            SIZE[1] = self._rows
+            SIZE[0] = int(self._cols)
+            SIZE[1] = int(self._rows)
             self._tasks = [
                 asyncio.create_task(self._run()),
                 asyncio.create_task(self._send_data()),
