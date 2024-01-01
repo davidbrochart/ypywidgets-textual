@@ -8,6 +8,8 @@ from rich.console import RenderableType
 from rich.segment import Segment
 from rich.style import Style
 from textual import events
+from textual.geometry import Region
+from textual.strip import Strip
 from textual.widget import Widget as TextualWidget
 from wcwidth import wcwidth as _wcwidth
 
@@ -29,56 +31,44 @@ class PyteDisplay:
     def __init__(self, screen):
         self._screen = screen
         self._cache = {}
+        self._dirty = set()
 
-    def __rich_console__(self, console, options):
-        if self._screen is None:
-            return
-
-        dirty_lines = {y: self._render_line(self._screen.buffer[y]) for y in self._screen.dirty}
+    def get_line(self, y: int) -> Strip:
+        self._dirty.update(self._screen.dirty)
         self._screen.dirty.clear()
-        init = not self._cache
-        for y in range(self._screen.lines):
-            dirty_line = y in dirty_lines
-            if init or dirty_line:
-                self._cache[y] = cache = []
-                if dirty_line:
-                    line = dirty_lines[y]
-                else:
-                    line = self._render_line(self._screen.buffer[y])
-                for char in line:
-                    color = None if char.fg == "default" else Color.from_triplet(parse_rgb_hex(char.fg))
-                    bgcolor = None if char.bg == "default" else Color.from_triplet(parse_rgb_hex(char.bg))
-                    cache.append(
-                        Segment(
-                            char.data,
-                            Style(
-                                color=color,
-                                bgcolor=bgcolor,
-                                bold=char.bold,
-                                italic=char.italics,
-                                underline=char.underscore,
-                                blink=char.blink,
-                                strike=char.strikethrough,
-                                reverse=char.reverse,
-                            )
+        if y in self._dirty or y not in self._cache:
+            line = self._screen.buffer[y]
+            is_wide_char = False
+            segments = []
+            for x in range(self._screen.columns):
+                if is_wide_char:
+                    is_wide_char = False
+                    continue
+                char = line[x].data
+                assert sum(map(wcwidth, char[1:])) == 0
+                is_wide_char = wcwidth(char[0]) == 2
+                char = line[x]
+                color = None if char.fg == "default" else Color.from_triplet(parse_rgb_hex(char.fg))
+                bgcolor = None if char.bg == "default" else Color.from_triplet(parse_rgb_hex(char.bg))
+                segments.append(
+                    Segment(
+                        char.data,
+                        Style(
+                            color=color,
+                            bgcolor=bgcolor,
+                            bold=char.bold,
+                            italic=char.italics,
+                            underline=char.underscore,
+                            blink=char.blink,
+                            strike=char.strikethrough,
+                            reverse=char.reverse,
                         )
                     )
-                cache.append(Segment("\n"))
-
-        for y in range(self._screen.lines):
-            for segment in self._cache[y]:
-                yield segment
-
-    def _render_line(self, line):
-        is_wide_char = False
-        for x in range(self._screen.columns):
-            if is_wide_char:
-                is_wide_char = False
-                continue
-            char = line[x].data
-            assert sum(map(wcwidth, char[1:])) == 0
-            is_wide_char = wcwidth(char[0]) == 2
-            yield line[x]
+                )
+            self._cache[y] = Strip(segments)
+            if y in self._dirty:
+                self._dirty.remove(y)
+        return self._cache[y]
 
 
 class Terminal(TextualWidget, can_focus=True):
@@ -96,8 +86,8 @@ class Terminal(TextualWidget, can_focus=True):
         self._tasks = [asyncio.create_task(self._recv())]
         self._ready_event = asyncio.Event()
 
-    def render(self) -> RenderableType:
-        return self._display
+    def render_line(self, y: int) -> Strip:
+        return self._display.get_line(y)
 
     def on_resize(self, event: events.Resize):
         self.do_resize(event.size.width, event.size.height)
@@ -146,7 +136,9 @@ class Terminal(TextualWidget, can_focus=True):
                 continue
             self._stream.feed(data)
             self._display = PyteDisplay(self._screen)
-            self.refresh()
+            for y in self._screen.dirty:
+                region = Region(0, y, self._screen.columns, 1)
+                self.refresh(region)
 
 
 class Widget(Terminal):
