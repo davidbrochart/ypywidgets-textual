@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import asyncio
 import json
+from typing import Type
 
+from textual import events
 from textual.app import App
+from textual.geometry import Size
 from ypywidgets import Widget as _Widget, reactive
 from ypywidgets.comm import CommWidget
 
-from ._driver import SIZE
+from ._driver import Driver
 
 
 class WidgetModel(_Widget):
@@ -26,24 +29,29 @@ class WidgetModel(_Widget):
 
 class Widget(CommWidget, WidgetModel):
 
-    def __init__(self, app: App, cols: int = 0, rows: int = 0) -> None:
+    def __init__(self, app_class: Type[App]) -> None:
         CommWidget.__init__(self)
         WidgetModel.__init__(self)
-        self._app = app
-        SIZE[0] = self._cols = cols
-        SIZE[1] = self._rows = rows
+        self._app = app_class(driver_class=Driver)
+        self._cols = 0
+        self._rows = 0
         self._data_from_app_queue = asyncio.Queue()
         self._data_to_app_queue = asyncio.Queue()
+        self._tasks = [
+            asyncio.create_task(self._run()),
+            asyncio.create_task(self._send_data()),
+            asyncio.create_task(self._recv_data()),
+        ]
 
     def watch__ready(self, value: bool):
         if value:
-            SIZE[0] = int(self._cols)
-            SIZE[1] = int(self._rows)
-            self._tasks = [
-                asyncio.create_task(self._run()),
-                asyncio.create_task(self._send_data()),
-                asyncio.create_task(self._recv_data()),
-            ]
+            size = Size(int(self._cols), int(self._rows))
+            loop = asyncio.get_running_loop()
+            event = events.Resize(size, size)
+            asyncio.run_coroutine_threadsafe(
+                self._app._post_message(event),
+                loop=loop,
+            )
 
     def watch__data_to_app(self, data: str):
         if data:
