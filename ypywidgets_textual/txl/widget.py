@@ -82,9 +82,10 @@ class Terminal(TextualWidget, can_focus=True):
         super().__init__()
         self._send_queue = send_queue
         self._recv_queue = recv_queue
-        self._display = PyteDisplay(None)
+        self._screen = pyte.Screen(0, 0)
+        self._stream = pyte.Stream(self._screen)
+        self._display = PyteDisplay(self._screen)
         self._tasks = [asyncio.create_task(self._recv())]
-        self._ready_event = asyncio.Event()
 
     def render_line(self, y: int) -> Strip:
         return self._display.get_line(y)
@@ -97,8 +98,8 @@ class Terminal(TextualWidget, can_focus=True):
             self.ymodel._cols = cols
         if self.ymodel._rows != rows:
             self.ymodel._rows = rows
+        self.ymodel._ready = False
         self.ymodel._ready = True
-        self._ready_event.set()
         self._screen = pyte.Screen(cols, rows)
         self._stream = pyte.Stream(self._screen)
 

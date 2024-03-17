@@ -25,7 +25,6 @@ from textual.driver import Driver as _Driver
 from textual.geometry import Size
 from textual.drivers._byte_stream import ByteStream
 
-SIZE = [None, None]
 WINDOWS = platform.system() == "Windows"
 
 
@@ -39,11 +38,6 @@ class Driver(_Driver):
     def __init__(
         self, app: App, *, debug: bool = False, size: tuple[int, int] | None = None
     ):
-        if size is None:
-            if SIZE[0] is not None:
-                width = SIZE[0]
-                height = SIZE[1]
-                size = width, height
         super().__init__(app, debug=debug, size=size)
         self.exit_event = Event()
         self._process_input_task = asyncio.create_task(self.process_input())
