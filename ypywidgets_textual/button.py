@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from typing import Callable
 
-from ypywidgets import Widget, reactive
+from ypywidgets import Declare, Widget
 from ypywidgets.comm import CommWidget
 
 
 class ButtonModel(Widget):
 
-    label = reactive("")
-    variant = reactive("default")
-    disabled = reactive(False)
-    _press = reactive(False)
-    _pressed = reactive(False)
+    label = Declare[str]("")
+    variant = Declare[str]("default")
+    disabled = Declare[bool](False)
+    _press = Declare[bool](False)
+    _pressed = Declare[bool](False)
 
     def __init__(
         self,
@@ -47,7 +47,8 @@ class ButtonModel(Widget):
     def action_press(self):
         self._press = not self._press
 
-    def watch__pressed(self):
+    @_pressed.watch
+    def _watch__pressed(self, old: bool, new: bool):
         self._on_button_pressed()
 
 

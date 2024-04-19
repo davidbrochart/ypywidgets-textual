@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ypywidgets import Widget, reactive
+from ypywidgets import Declare, Widget
 from ypywidgets.comm import CommWidget
 
 
 class SwitchModel(Widget):
-    value = reactive(False)
+    value = Declare[bool](False)
 
     def __init__(
         self,

@@ -149,7 +149,11 @@ class Widget(Terminal):
         self._data_from_app_queue = asyncio.Queue()
         self._data_to_app_queue = asyncio.Queue()
         super().__init__(self._data_to_app_queue, self._data_from_app_queue)
-        model.watch__data_from_app = self._to_terminal
+
+        @WidgetModel._data_from_app.watch
+        def _watch__data_from_app(obj, old: str, new: str):
+            self._to_terminal(new)
+
         self._tasks = [asyncio.create_task(self._from_terminal())]
 
     def _to_terminal(self, data: str) -> None:

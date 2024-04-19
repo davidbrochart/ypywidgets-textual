@@ -8,10 +8,23 @@ class Button(TextualButton):
     def __init__(self, model: ButtonModel) -> None:
         super().__init__()
         self.ymodel = model
-        model.watch__press = self.action_press
-        model.watch_label = self._set_label
-        model.watch_variant = self._set_variant
-        model.watch_disabled = self._set_disabled
+
+        @ButtonModel._press.watch
+        def _watch__press(obj, old, new):
+            self.action_press()
+
+        @ButtonModel.label.watch
+        def _watch_label(obj, old: str, new: str):
+            self._set_label(new)
+
+        @ButtonModel.variant.watch
+        def _watch_variant(obj, old: str, new: str):
+            self._set_variant(new)
+
+        @ButtonModel.disabled.watch
+        def _watch_disabled(obj, old: bool, new: bool):
+            self._set_disabled(new)
+
         self._set_label(model.label)
         self._set_variant(model.variant)
         self._set_disabled(model.disabled)
