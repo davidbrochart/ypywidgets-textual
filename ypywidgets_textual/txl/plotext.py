@@ -8,10 +8,23 @@ class Plotext(PlotextPlot):
     def __init__(self, model: PlotextModel) -> None:
         super().__init__()
         self.ymodel = model
-        model.watch__clear_data = self.clear_data
-        model.watch__scatter = self.scatter
-        model.watch__plot = self.plot
-        model.watch__title = self.title
+
+        @PlotextModel._clear_data.watch
+        def _watch__clear_data(obj, old, new):
+            self.clear_data()
+
+        @PlotextModel._scatter.watch
+        def _watch__scatter(obj, old, new):
+            self.scatter()
+
+        @PlotextModel._plot.watch
+        def _watch__plot(obj, old, new):
+            self.plot()
+
+        @PlotextModel._title.watch
+        def _watch__title(obj, old: str, new: str):
+            self.title(new)
+
         self.clear_data()
         self.scatter()
         self.plot()

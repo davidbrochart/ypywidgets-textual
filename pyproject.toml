@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "Textual widgets for ypywidgets"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 authors = [
     { name = "David Brochart", email = "david.brochart@gmail.com" },
 ]
@@ -19,7 +19,7 @@ keywords = [
     "textual",
 ]
 dependencies = [
-    "ypywidgets >=0.6.3",
+    "ypywidgets >=0.7.0,<0.8.0",
     "textual >=0.41.0",
     "textual-plotext",
     "pyte",

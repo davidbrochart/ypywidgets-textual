@@ -7,18 +7,18 @@ from typing import Type
 from textual import events
 from textual.app import App
 from textual.geometry import Size
-from ypywidgets import Widget as _Widget, reactive
+from ypywidgets import Declare, Widget as _Widget
 from ypywidgets.comm import CommWidget
 
 from ._driver import Driver
 
 
 class WidgetModel(_Widget):
-    _data_from_app = reactive("")
-    _data_to_app = reactive("")
-    _cols = reactive(0)
-    _rows = reactive(0)
-    _ready = reactive(False)
+    _data_from_app = Declare[str]("")
+    _data_to_app = Declare[str]("")
+    _cols = Declare[int](0)
+    _rows = Declare[int](0)
+    _ready = Declare[bool](False)
 
     def __init__(
         self,
@@ -43,19 +43,21 @@ class Widget(CommWidget, WidgetModel):
             asyncio.create_task(self._recv_data()),
         ]
 
-    def watch__ready(self, value: bool):
-        if value:
-            size = Size(int(self._cols), int(self._rows))
-            loop = asyncio.get_running_loop()
-            event = events.Resize(size, size)
-            asyncio.run_coroutine_threadsafe(
-                self._app._post_message(event),
-                loop=loop,
-            )
+        @WidgetModel._ready.watch
+        def _watch__ready(obj, old: bool, value: bool):
+            if value:
+                size = Size(int(obj._cols), int(obj._rows))
+                loop = asyncio.get_running_loop()
+                event = events.Resize(size, size)
+                asyncio.run_coroutine_threadsafe(
+                    self._app._post_message(event),
+                    loop=loop,
+                )
 
-    def watch__data_to_app(self, data: str):
-        if data:
-            self._data_to_app_queue.put_nowait(data)
+        @WidgetModel._data_to_app.watch
+        def _watch__data_to_app(obj, old:str, data: str):
+            if data:
+                obj._data_to_app_queue.put_nowait(data)
 
     async def _send_data(self):
         while True:
