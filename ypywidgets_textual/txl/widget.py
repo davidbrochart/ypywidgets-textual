@@ -152,6 +152,9 @@ class Widget(Terminal):
 
         @WidgetModel._data_from_app.watch
         def _watch__data_from_app(obj, old: str, new: str):
+            if obj != model:
+                return
+
             self._to_terminal(new)
 
         self._tasks = [asyncio.create_task(self._from_terminal())]

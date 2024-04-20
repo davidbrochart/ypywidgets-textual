@@ -11,6 +11,9 @@ class Switch(TextualSwitch):
 
         @SwitchModel.value.watch
         def _watch_value(obj, old, new):
+            if obj != model:
+                return
+
             self._update_value(new)
 
         self._update_value(model.value)
