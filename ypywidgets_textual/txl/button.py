@@ -11,18 +11,30 @@ class Button(TextualButton):
 
         @ButtonModel._press.watch
         def _watch__press(obj, old, new):
+            if obj != model:
+                return
+
             self.action_press()
 
         @ButtonModel.label.watch
         def _watch_label(obj, old: str, new: str):
+            if obj != model:
+                return
+
             self._set_label(new)
 
         @ButtonModel.variant.watch
         def _watch_variant(obj, old: str, new: str):
+            if obj != model:
+                return
+
             self._set_variant(new)
 
         @ButtonModel.disabled.watch
         def _watch_disabled(obj, old: bool, new: bool):
+            if obj != model:
+                return
+
             self._set_disabled(new)
 
         self._set_label(model.label)

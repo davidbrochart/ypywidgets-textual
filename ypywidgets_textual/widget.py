@@ -45,6 +45,9 @@ class Widget(CommWidget, WidgetModel):
 
         @WidgetModel._ready.watch
         def _watch__ready(obj, old: bool, value: bool):
+            if obj != self:
+                return
+
             if value:
                 size = Size(int(obj._cols), int(obj._rows))
                 loop = asyncio.get_running_loop()
@@ -56,6 +59,9 @@ class Widget(CommWidget, WidgetModel):
 
         @WidgetModel._data_to_app.watch
         def _watch__data_to_app(obj, old:str, data: str):
+            if obj != self:
+                return
+
             if data:
                 obj._data_to_app_queue.put_nowait(data)
 
