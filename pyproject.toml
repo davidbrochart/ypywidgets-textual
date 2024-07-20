@@ -36,6 +36,10 @@ include = [
     "/ypywidgets_textual",
 ]
 
+[tool.hatch.build.targets.wheel]
+ignore-vcs = true
+packages = ["ypywidgets-textual"]
+
 [project.entry-points.ypywidgets]
 ButtonModel = "ypywidgets_textual.button:ButtonModel"
 Button = "ypywidgets_textual.button:Button"
