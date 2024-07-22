@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from typing import Callable
 
-from ypywidgets import Declare, Widget
+from ypywidgets import Reactive, Widget
 from ypywidgets.comm import CommWidget
 
 
 class ButtonModel(Widget):
 
-    label = Declare[str]("")
-    variant = Declare[str]("default")
-    disabled = Declare[bool](False)
-    _press = Declare[bool](False)
-    _pressed = Declare[bool](False)
+    label = Reactive[str]("")
+    variant = Reactive[str]("default")
+    disabled = Reactive[bool](False)
+    _press = Reactive[bool](False)
+    _pressed = Reactive[bool](False)
 
     def __init__(
         self,
