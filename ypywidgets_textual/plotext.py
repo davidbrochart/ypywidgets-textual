@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from ypywidgets import Declare, Widget
+from ypywidgets import Reactive, Widget
 from ypywidgets.comm import CommWidget
 
 
 class PlotextModel(Widget):
 
-    _clear_data = Declare[bool](False)
-    _args = Declare[list]([])
-    _scatter = Declare[bool](False)
-    _plot = Declare[bool](False)
-    _title = Declare[str]("")
+    _clear_data = Reactive[bool](False)
+    _args = Reactive[list]([])
+    _scatter = Reactive[bool](False)
+    _plot = Reactive[bool](False)
+    _title = Reactive[str]("")
 
     def __init__(self, ydoc=None) -> None:
         super().__init__(ydoc)

@@ -7,18 +7,18 @@ from typing import Type
 from textual import events
 from textual.app import App
 from textual.geometry import Size
-from ypywidgets import Declare, Widget as _Widget
+from ypywidgets import Reactive, Widget as _Widget
 from ypywidgets.comm import CommWidget
 
 from ._driver import Driver
 
 
 class WidgetModel(_Widget):
-    _data_from_app = Declare[str]("")
-    _data_to_app = Declare[str]("")
-    _cols = Declare[int](0)
-    _rows = Declare[int](0)
-    _ready = Declare[bool](False)
+    _data_from_app = Reactive[str]("")
+    _data_to_app = Reactive[str]("")
+    _cols = Reactive[int](0)
+    _rows = Reactive[int](0)
+    _ready = Reactive[bool](False)
 
     def __init__(
         self,
