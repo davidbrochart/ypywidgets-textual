@@ -22,8 +22,8 @@ from textual import events, log, messages
 from textual._xterm_parser import XTermParser
 from textual.app import App
 from textual.driver import Driver as _Driver
-from textual.geometry import Size
 from textual.drivers._byte_stream import ByteStream
+from textual.geometry import Size
 
 WINDOWS = platform.system() == "Windows"
 
@@ -36,9 +36,14 @@ class Driver(_Driver):
     """A headless driver that may be run remotely."""
 
     def __init__(
-        self, app: App, *, debug: bool = False, size: tuple[int, int] | None = None
+        self,
+        app: App,
+        *,
+        debug: bool = False,
+        mouse: bool = True,
+        size: tuple[int, int] | None = None,
     ):
-        super().__init__(app, debug=debug, size=size)
+        super().__init__(app, debug=debug, mouse=mouse, size=size)
         self.exit_event = Event()
         self._process_input_task = asyncio.create_task(self.process_input())
         self._stdout_queue = asyncio.Queue()
@@ -127,6 +132,7 @@ class Driver(_Driver):
         self._request_terminal_sync_mode_support()
         self._enable_bracketed_paste()
         self.flush()
+        self._app.call_later(self._app.post_message, events.AppBlur())
 
     def disable_input(self) -> None:
         """Disable further input."""
@@ -138,10 +144,7 @@ class Driver(_Driver):
 
     async def process_input(self) -> None:
         """Wait for input and dispatch events."""
-        data = await self._stdin_queue.get()
-        def more_data():
-            return not self._stdin_queue.empty()
-        parser = XTermParser(more_data, debug=self._debug)
+        parser = XTermParser(debug=self._debug)
         utf8_decoder = getincrementaldecoder("utf-8")().decode
         decode = utf8_decoder
         # The server sends us a stream of bytes, which contains the equivalent of stdin, plus
@@ -154,10 +157,12 @@ class Driver(_Driver):
                     if packet_type == "D":
                         # Treat as stdin
                         for event in parser.feed(decode(payload)):
-                            self.process_event(event)
+                            self.process_message(event)
                     else:
                         # Process meta information separately
                         self._on_meta(packet_type, payload)
+                for event in parser.tick():
+                    self.process_message(event)
         except _ExitInput:
             pass
         except Exception:
@@ -175,9 +180,13 @@ class Driver(_Driver):
             payload: Meta payload (JSON encoded as bytes).
         """
         payload_map = json.loads(payload)
-        _type = payload_map.get("type")
-        if isinstance(payload_map, dict):
+        _type = payload_map.get("type", {})
+        if isinstance(_type, str):
             self.on_meta(_type, payload_map)
+        else:
+            log.error(
+                f"Protocol error: type field value is not a string. Value is {_type!r}"
+            )
 
     def on_meta(self, packet_type: str, payload: dict) -> None:
         """Process meta information.
@@ -188,8 +197,12 @@ class Driver(_Driver):
         """
         if packet_type == "resize":
             self._size = (payload["width"], payload["height"])
-            size = Size(*self._size)
-            self._app.post_message(events.Resize(size, size))
+            requested_size = Size(*self._size)
+            self._app.post_message(events.Resize(requested_size, requested_size))
+        elif packet_type == "focus":
+            self._app.post_message(events.AppFocus())
+        elif packet_type == "blur":
+            self._app.post_message(events.AppBlur())
         elif packet_type == "quit":
             self._app.post_message(messages.ExitApp())
         elif packet_type == "exit":
