@@ -4,4 +4,4 @@ from .switch import Switch as Switch
 from .widget import Widget as Widget
 from ._driver import Driver as Driver
 
-__version__ = "0.5.0"
+__version__ = "0.5.1"
